@@ -1,0 +1,316 @@
+" Specify a directory for plugins
+" - For Neovim: ~/.local/share/nvim/plugged
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
+
+Plug 'airblade/vim-gitgutter'
+Plug 'cohama/lexima.vim'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'dhruvasagar/vim-table-mode', { 'on':'TableModeToggle' }
+Plug 'ervandew/supertab'
+Plug 'flazz/vim-colorschemes'
+Plug 'godlygeek/tabular'
+Plug 'hari-rangarajan/cctree', { 'for':'c' }
+Plug 'honza/vim-snippets'
+Plug 'kana/vim-submode'
+Plug 'ludovicchabant/vim-gutentags'
+Plug 'majutsushi/tagbar'
+Plug 'mbbill/undotree', { 'on':'UndotreeToggle' }
+Plug 'mileszs/ack.vim'
+Plug 'scrooloose/nerdcommenter'
+Plug 'SirVer/ultisnips'
+Plug 'tpope/vim-fugitive'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'vim-scripts/DoxygenToolkit.vim', { 'on':'Dox' }
+Plug 'vim-scripts/a.vim', { 'for':'c' }
+Plug 'yggdroot/indentline'
+Plug 'FelikZ/ctrlp-py-matcher'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'maxbrunsfeld/vim-yankstack'
+Plug 'scrooloose/nerdtree'
+Plug 'davidhalter/jedi-vim'
+Plug 'rust-lang/rust.vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'dense-analysis/ale'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'mattn/vim-lsp-settings'
+" Initialize plugin system
+call plug#end()
+
+" -------------------------------------------------------------------------------------------------------------------"
+
+set nocompatible              " be iMproved, required
+set laststatus=2
+filetype plugin indent on    " required
+
+"Function to toggle the mouse [Key = leader + m]
+function! ToggleMouse()
+    "check if mouse is enabled
+    if &mouse == 'a'
+        " disable mouse
+        set mouse=
+    else
+        " enable mouse everywhere
+        set mouse=a
+    endif
+endfunc
+
+"Remove all trailing whitespace by pressing F3
+map <c-d>                          :Dox<CR>
+nnoremap <F3>                      :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
+nnoremap <leader>a                 :bp<CR>
+nnoremap <leader>cf                :CCTreeTraceForward<CR>
+nnoremap <leader>c                 :IndentLinesToggle<CR>:set invnumber<CR>:GitGutterSignsToggle<CR>
+nnoremap <leader>cr                :CCTreeTraceReverse<CR>
+nnoremap <leader>d                 :bn<CR>
+nnoremap <leader>fs                :TagbarClose<CR>:Ack!<space><c-r>=expand("<cword>")<cr><CR>
+nnoremap <leader>f                 :TagbarClose<CR>:Ack!<space>
+nnoremap <leader>g                 :GitGutterLineHighlightsToggle<CR>
+nnoremap <leader>gn                :GitGutterNextHunk<CR>
+nnoremap <leader>gp                :GitGutterPrevHunk<CR>
+nnoremap <leader>gt                :GitGutterSignsToggle<CR>
+nnoremap <leader>h                 :A<CR>
+nnoremap <leader>i                 :IndentLinesToggle<CR>
+nnoremap <leader>m                 :call ToggleMouse()<CR>
+nnoremap <leader>]                 :normal da}<CR>
+nnoremap <leader>n                 :set invnumber<CR>
+nnoremap <leader>t                 :TagbarOpen fj<CR>
+nnoremap <leader>tx                :TagbarClose<CR>
+nnoremap <leader>u                 :UndotreeToggle<CR>
+nnoremap <leader>x                 :bd<CR>
+nnoremap <leader>p                 :CtrlPTag<CR>
+nnoremap <leader>1                 :let @/ = ""<CR>
+nnoremap <leader>ta                :TableModeToggle<CR>
+
+set bs=2
+set hidden
+set hlsearch
+set incsearch
+set noswapfile
+set nowrapscan
+set nu
+set showmatch
+set tabstop=4 shiftwidth=4 expandtab
+set t_Co=256
+"set textwidth=118
+set undodir=$HOME/.vim/undo " where to save undo histories
+set undofile                " Save undos after file closes
+set undolevels=1000         " How many undos
+set undoreload=10000        " number of lines to save for undo
+set updatetime=5000
+set wildmenu
+syntax on
+
+"folding settings
+set foldlevel=1         "this is just what i use
+set foldmethod=indent   "fold based on indent
+set foldnestmax=10      "deepest fold is 10 levels
+set nofoldenable        "dont fold by default
+
+"if you want to highlight the whole line
+"To highlight lines longer than 120 characters.
+"augroup vimrc_autocmds
+"    autocmd BufEnter * highlight OverLength ctermbg=red ctermfg=white guibg=#111111
+"    autocmd BufEnter * match OverLength /\%120v.*/
+"augroup END
+
+"if you need to not pollute the whole line
+highlight ColorColumn ctermbg=grey
+call matchadd('ColorColumn', '\%120v', 100)
+
+"to update/save after the file has been modified and no key has been pressed
+"for update time
+autocmd CursorHold,CursorHoldI * update
+
+"To open file right where it was closed.
+if has("autocmd")
+    au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+                \| exe "normal! g'\"" | endif
+endif
+
+"Indent every file before saving
+"autocmd BufWritePre *.h :normal gg=G``
+"autocmd BufWritePre *.c :normal gg=G``
+"autocmd BufWritePre *.py :normal gg=G``
+"autocmd BufWritePre .*rc :normal gg=G``
+
+"Remove whitespace before saving
+"autocmd BufWritePre * :%s/\s\+$//e
+
+"Open Tagbar by default for only C files
+autocmd Filetype c :TagbarOpen
+
+autocmd Filetype c :UltiSnipsAddFiletypes c.cpp
+autocmd Filetype c :UltiSnipsAddFiletypes cpp.c
+
+"Indent autowrap long lines before saving
+"exe ':g/./normal gqq' | normal ``zz
+" autocmd BufWritePre *.c :exe ':g/./normal gqq' | normal ``zz
+" autocmd BufWritePre *.txt :g/./ normal gqq
+
+"To clear the white space and indent the files after writing,
+"TODO :
+" air-line
+let g:airline_powerline_fonts = 1
+
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+
+" unicode symbols
+let g:airline_left_sep = '»'
+let g:airline_left_sep = '▶'
+let g:airline_right_sep = '«'
+let g:airline_right_sep = '◀'
+let g:airline_symbols.linenr = '␊'
+let g:airline_symbols.linenr = '␤'
+let g:airline_symbols.linenr = '¶'
+let g:airline_symbols.branch = '⎇'
+let g:airline_symbols.paste = 'ρ'
+let g:airline_symbols.paste = 'Þ'
+let g:airline_symbols.paste = '∥'
+let g:airline_symbols.whitespace = 'Ξ'
+
+" airline symbols
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ''
+let g:airline_theme='badwolf'
+
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
+let g:airline#extensions#tabline#formatter = 'default'
+
+"For the CCTree
+let g:CCTreeCscopeDb = "cscope.out"
+let g:CCTreeRecursiveDepth = 3
+let g:CCTreeMinVisibleDepth = 3
+
+"tagbar
+let g:tagbar_compact = 1
+
+"gutentags
+let g:gutentags_modules = ['ctags']
+let g:gutentags_ctags_extra_args = ['--fields=+l --extra=+f --langdef=file --c-kinds=+lx']
+let g:gutentags_project_root = ['.project']
+let g:ctrlp_root_markers = ['.project']
+
+"ycm
+let g:ycm_show_diagnostics_ui = 0
+
+" make YCM compatible with UltiSnips (using supertab)
+let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+let g:SuperTabDefaultCompletionType = '<C-n>'
+
+" better key bindings for UltiSnipsExpandTrigger
+let g:UltiSnipsExpandTrigger = "<tab>"
+let g:UltiSnipsJumpForwardTrigger = "<tab>"
+let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+
+"make vim recognizing snippets dir
+set runtimepath+=~/.vim/my-snippets/
+" use different snippets dir
+let g:UltiSnipsSnippetsDir='~/.vim/my-snippets/'
+let g:UltiSnipsSnippetDirectories=["my-snippets"]
+
+set listchars=tab:>-,trail:~,extends:>,precedes:<
+
+"ycm no checking over the file size
+let g:ycm_disable_for_files_larger_than_kb = 0
+
+"ycm getting info from the tag file
+let g:ycm_collect_identifiers_from_tags_files = 0
+let g:ycm_min_num_of_chars_for_completion = 3
+
+let g:ycm_cache_omnifunc = 0
+
+"search the word under the cursor using ack
+let g:ack_use_cword_for_empty_search = 0
+let g:ackhighlight = 1
+
+"space between comment and stuff like that
+let NERDSpaceDelims=0
+let NERDDefaultAlign='left'
+let g:NERDAltDelims_c = 1
+let g:NERDAltDelims_cpp = 1
+
+" Create a submode to handle windows
+" The submode is entered whith <Leader>w and exited with <Leader>
+
+
+let g:submode_keep_leaving_key = 0
+let g:submode_timeout = 0
+
+"let g:DoxygenToolkit_compactDoc = "yes"
+let g:DoxygenToolkit_commentType = "C++"
+
+let g:ctrlp_extensions = ['tag']
+
+let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
+
+let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
+
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*/vendor/*,*/\.git/*
+
+" Set delay to prevent extra search
+let g:ctrlp_lazy_update = 350
+
+" Do not clear filenames cache, to improve CtrlP startup
+" You can manualy clear it by <F5>
+let g:ctrlp_clear_cache_on_exit = 0
+
+" Set no file limit, we are building a big project
+let g:ctrlp_max_files = 0
+
+if exists("g:ctrl_user_command")
+    unlet g:ctrlp_user_command
+endif
+
+let g:rustfmt_autosave = 1
+let g:rustfmt_emit_files = 1
+let g:rustfmt_fail_silently = 0
+
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif
+
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" If ag is available use it as filename list generator instead of 'find'
+if executable("ag")
+    set grepprg=ag\ --nogroup\ --nocolor
+    let g:ctrlp_user_command = 'ag %s -i --nocolor --nogroup --ignore ''.git'' --ignore ''.DS_Store'' --ignore ''node_modules'' --hidden -g ""'
+endif
+
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_regexp = 1
